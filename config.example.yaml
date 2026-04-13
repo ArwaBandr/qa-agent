@@ -1,0 +1,23 @@
+llm:
+  provider: "claude"          # claude | openai | ollama
+  model: "claude-sonnet-4-6"
+  api_key: ""                 # or set env var: EXPLORER_LLM_API_KEY
+
+browser:
+  headless: true
+  viewport_width: 1920
+  viewport_height: 1080
+  timeout: 30000              # navigation timeout in ms
+  action_timeout: 10000       # click/fill timeout in ms
+
+exploration:
+  max_pages: 200              # safety limit
+  same_origin_only: true
+  screenshot_on_action: true  # capture before/after screenshots
+
+auth:
+  username: ""
+  password: ""
+
+artifacts:
+  dir: "./artifacts"          # screenshots, logs
