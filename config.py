@@ -11,6 +11,8 @@ DEFAULTS = {
         "provider": "claude",
         "model": "claude-sonnet-4-6",
         "api_key": "",
+        "base_url": "",
+        "fast_model": "",
     },
     "browser": {
         "headless": True,

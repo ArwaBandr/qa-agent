@@ -1,7 +1,9 @@
 llm:
-  provider: "claude"          # claude | openai | ollama
+  provider: "claude"          # claude | openai | ollama | local
   model: "claude-sonnet-4-6"
   api_key: ""                 # or set env var: EXPLORER_LLM_API_KEY
+  base_url: ""                # custom API endpoint (for local servers, proxies)
+  fast_model: ""              # cheaper model for simple tasks (auto-detected if empty)
 
 browser:
   headless: true

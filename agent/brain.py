@@ -17,33 +17,48 @@ RETRY_DELAY = 5  # seconds
 FAST_MODELS = {
     "claude": "claude-haiku-4-5-20251001",
     "openai": "gpt-4o-mini",
-    "ollama": None,  # use same model
 }
 
 
 class LLMClient:
     """Unified interface to call any supported LLM provider."""
 
-    def __init__(self, provider: str, model: str, api_key: str = ""):
+    def __init__(self, provider: str, model: str, api_key: str = "", base_url: str = "", fast_model: str = ""):
         self.provider = provider.lower()
         self.model = model
-        self.fast_model = FAST_MODELS.get(self.provider) or model
+        self.fast_model = fast_model or FAST_MODELS.get(self.provider) or model
         self.api_key = api_key or os.environ.get("EXPLORER_LLM_API_KEY", "")
+        self.base_url = base_url
         self._client = None
         self._init_client()
 
     def _init_client(self):
         if self.provider == "claude":
             import anthropic
-            self._client = anthropic.Anthropic(api_key=self.api_key)
-        elif self.provider == "openai":
+            kwargs = {"api_key": self.api_key}
+            if self.base_url:
+                kwargs["base_url"] = self.base_url
+            self._client = anthropic.Anthropic(**kwargs)
+        elif self.provider in ("openai", "local"):
             import openai
-            self._client = openai.OpenAI(api_key=self.api_key)
+            import httpx
+            kwargs = {}
+            if self.provider == "local":
+                # Local OpenAI-compatible server (LM Studio, vLLM, LocalAI, etc.)
+                kwargs["base_url"] = self.base_url or "http://localhost:1234/v1"
+                kwargs["api_key"] = self.api_key or "not-needed"
+                kwargs["http_client"] = httpx.Client(verify=False)
+            else:
+                kwargs["api_key"] = self.api_key
+                if self.base_url:
+                    kwargs["base_url"] = self.base_url
+                    kwargs["http_client"] = httpx.Client(verify=False)
+            self._client = openai.OpenAI(**kwargs)
         elif self.provider == "ollama":
-            # Ollama uses HTTP API, no special client needed
+            # Ollama uses its own HTTP API
             pass
         else:
-            raise ValueError(f"Unsupported LLM provider: {self.provider}")
+            raise ValueError(f"Unsupported LLM provider: {self.provider}. Use: claude, openai, ollama, local")
 
     def chat(
         self,
@@ -58,7 +73,7 @@ class LLMClient:
             try:
                 if self.provider == "claude":
                     return self._chat_claude(system_prompt, user_message, screenshot_paths, temperature, max_tokens)
-                elif self.provider == "openai":
+                elif self.provider in ("openai", "local"):
                     return self._chat_openai(system_prompt, user_message, screenshot_paths, temperature, max_tokens)
                 elif self.provider == "ollama":
                     return self._chat_ollama(system_prompt, user_message, screenshot_paths, temperature, max_tokens)

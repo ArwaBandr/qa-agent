@@ -143,6 +143,8 @@ async def run_exploration(url: str, config: dict):
         provider=llm_cfg["provider"],
         model=llm_cfg["model"],
         api_key=llm_cfg["api_key"],
+        base_url=llm_cfg.get("base_url", ""),
+        fast_model=llm_cfg.get("fast_model", ""),
     )
 
     # Init browser
@@ -205,9 +207,11 @@ Examples:
     parser.add_argument("--username", help="Login username")
     parser.add_argument("--password", help="Login password")
     parser.add_argument("--max-pages", type=int, help="Max pages to explore")
-    parser.add_argument("--provider", help="LLM provider: claude, openai, ollama")
+    parser.add_argument("--provider", help="LLM provider: claude, openai, ollama, local")
     parser.add_argument("--model", help="LLM model name")
     parser.add_argument("--api-key", help="LLM API key")
+    parser.add_argument("--base-url", help="Custom API base URL (for local servers, proxies)")
+    parser.add_argument("--fast-model", help="Cheaper/faster model for simple tasks")
     parser.add_argument("--focus", help="Focus testing on a specific area (e.g., 'checkout flow', 'search feature')")
     parser.add_argument("--headless", action="store_true", default=None)
     parser.add_argument("--no-headless", action="store_false", dest="headless")
@@ -228,13 +232,17 @@ Examples:
         config["llm"]["model"] = args.model
     if args.api_key:
         config["llm"]["api_key"] = args.api_key
+    if args.base_url:
+        config["llm"]["base_url"] = args.base_url
+    if args.fast_model:
+        config["llm"]["fast_model"] = args.fast_model
     if args.focus:
         config["exploration"]["focus"] = args.focus
     if args.headless is not None:
         config["browser"]["headless"] = args.headless
 
-    # Validate API key
-    if not config["llm"]["api_key"] and config["llm"]["provider"] != "ollama":
+    # Validate API key (not needed for ollama or local providers)
+    if not config["llm"]["api_key"] and config["llm"]["provider"] not in ("ollama", "local"):
         provider = config["llm"]["provider"]
         env_var = {"claude": "ANTHROPIC_API_KEY", "openai": "OPENAI_API_KEY"}.get(provider, "EXPLORER_LLM_API_KEY")
         print(f"  ERROR: No API key provided for {provider}.")
