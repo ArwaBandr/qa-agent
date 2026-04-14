@@ -2,6 +2,7 @@
 Observer — Captures network traffic, console logs, JS errors, and dialogs
 using Playwright's built-in event system.
 """
+from __future__ import annotations
 
 import time
 from dataclasses import dataclass, field

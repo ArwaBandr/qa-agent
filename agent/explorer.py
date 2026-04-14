@@ -3,6 +3,7 @@ Explorer — Main exploration loop.
 Ties together Browser, Planner, Judge, and Observer into an autonomous
 exploratory testing agent.
 """
+from __future__ import annotations
 
 import asyncio
 import json as _json

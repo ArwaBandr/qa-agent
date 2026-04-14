@@ -2,6 +2,7 @@
 Planner — Uses the LLM to decide what actions to take next.
 Analyzes the current page, understands its purpose, and plans test actions.
 """
+from __future__ import annotations
 
 from typing import Optional
 from agent.brain import LLMClient

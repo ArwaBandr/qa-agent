@@ -3,6 +3,7 @@ Extractor — Pulls structured data from the current page DOM.
 Provides the LLM with a clear picture of what's on the page:
 interactive elements, text content, forms, navigation, and page structure.
 """
+from __future__ import annotations
 
 from playwright.async_api import Page
 

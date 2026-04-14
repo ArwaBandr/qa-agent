@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "AI-powered exploratory testing agent — give it a URL, it finds bugs"
 readme = "README.md"
 license = "MIT"
-requires-python = ">=3.10"
+requires-python = ">=3.9"
 dependencies = [
     "playwright>=1.44.0",
     "pyyaml>=6.0",

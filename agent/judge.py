@@ -2,6 +2,7 @@
 Judge — Uses the LLM to evaluate action results and detect bugs.
 Compares before/after state and decides if something went wrong.
 """
+from __future__ import annotations
 
 from typing import Optional
 from agent.brain import LLMClient

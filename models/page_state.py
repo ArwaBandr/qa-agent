@@ -1,6 +1,7 @@
 """
 Page State — a snapshot of everything the LLM needs to know about the current page.
 """
+from __future__ import annotations
 
 from dataclasses import dataclass, field
 from typing import Optional

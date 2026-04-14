@@ -3,6 +3,7 @@ Brain — LLM client abstraction.
 Supports Claude, OpenAI, and Ollama with vision capabilities.
 Sends page context + screenshots and gets structured decisions back.
 """
+from __future__ import annotations
 
 import base64
 import json

@@ -8,14 +8,38 @@ Uses an LLM (Claude or GPT) + Playwright to autonomously explore web application
 
 You received a `.whl` file — that's all you need. No source code required.
 
-**Prerequisites:** Python 3.10+ installed on your machine.
+**Prerequisites:** Python 3.9+ installed on your machine.
+
+**Step 1 — Install:**
 
 ```bash
 pip install qa_explorer-0.1.0-py3-none-any.whl
 playwright install chromium
 ```
 
-That's it. The `qa-explorer` command is now available globally.
+**Step 2 — Generate config:**
+
+```bash
+qa-explorer --init
+```
+
+This creates a `config.yaml` in your current directory.
+
+**Step 3 — Edit config.yaml** with your provider, model, and API key:
+
+```yaml
+llm:
+  provider: "openai"                          # or claude, ollama, local
+  model: "your-model-name"
+  api_key: "your-api-key"
+  base_url: "https://your-local-server/v1"    # only if using a custom endpoint
+```
+
+**Step 4 — Run:**
+
+```bash
+qa-explorer https://your-app.com --config config.yaml
+```
 
 ## Install (From Source)
 
@@ -157,5 +181,5 @@ pip install --force-reinstall qa_explorer-0.2.0-py3-none-any.whl
 
 ## Requirements
 
-- Python 3.10+
+- Python 3.9+
 - A supported LLM API key (Claude, OpenAI, or compatible) or local model

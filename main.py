@@ -7,6 +7,7 @@ Usage:
   qa-explorer https://example.com --username admin --password secret
   qa-explorer https://example.com --provider openai --model gpt-4o
 """
+from __future__ import annotations
 
 import argparse
 import asyncio
@@ -186,6 +187,44 @@ async def run_exploration(url: str, config: dict):
         await engine.stop()
 
 
+CONFIG_TEMPLATE = """\
+llm:
+  provider: "claude"          # claude | openai | ollama | local
+  model: "claude-sonnet-4-6"
+  api_key: ""                 # or set env var: ANTHROPIC_API_KEY / OPENAI_API_KEY
+  base_url: ""                # custom API endpoint (for local servers, proxies)
+  fast_model: ""              # cheaper model for simple tasks (auto-detected if empty)
+
+browser:
+  headless: true
+  viewport_width: 1920
+  viewport_height: 1080
+  timeout: 30000              # navigation timeout in ms
+  action_timeout: 10000       # click/fill timeout in ms
+
+exploration:
+  max_pages: 200              # safety limit
+  same_origin_only: true
+
+auth:
+  username: ""
+  password: ""
+"""
+
+
+def _generate_config():
+    path = os.path.join(os.getcwd(), "config.yaml")
+    if os.path.exists(path):
+        print(f"  config.yaml already exists in this directory. Delete it first to regenerate.")
+        return
+    with open(path, "w") as f:
+        f.write(CONFIG_TEMPLATE)
+    print(f"  Created config.yaml")
+    print(f"  Edit it with your LLM provider and API key, then run:")
+    print(f"    qa-explorer https://your-app.com --config config.yaml")
+    print()
+
+
 def main():
     print_banner()
 
@@ -202,7 +241,8 @@ Examples:
   qa-explorer https://myapp.com --focus "checkout flow"
         """,
     )
-    parser.add_argument("url", help="URL of the system under test")
+    parser.add_argument("url", nargs="?", help="URL of the system under test")
+    parser.add_argument("--init", action="store_true", help="Generate a config.yaml template in the current directory")
     parser.add_argument("--config", help="Path to config YAML file")
     parser.add_argument("--username", help="Login username")
     parser.add_argument("--password", help="Login password")
@@ -217,6 +257,15 @@ Examples:
     parser.add_argument("--no-headless", action="store_false", dest="headless")
 
     args = parser.parse_args()
+
+    # Handle --init: generate config template
+    if args.init:
+        _generate_config()
+        return
+
+    if not args.url:
+        parser.error("url is required (unless using --init)")
+
     config = load_config(args.config)
 
     # CLI overrides

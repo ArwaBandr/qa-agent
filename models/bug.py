@@ -1,6 +1,7 @@
 """
 Bug Report model — what the agent outputs when it finds an issue.
 """
+from __future__ import annotations
 
 from dataclasses import dataclass, field
 from typing import Optional
